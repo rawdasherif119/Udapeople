@@ -304,15 +304,11 @@ jobs:
       - image: python:3.7-alpine3.11 
     steps:
       - checkout
-      - awscli-setup
       - run:
           name: Install dependencies
           command: |
             apk add --update curl nodejs npm
-      - run:
-          name: Get backend url
-          command: |
-            # your code here
+            pip install awscli
       - run:
           name: Backend smoke test.
           command: |
