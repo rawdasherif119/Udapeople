@@ -237,7 +237,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/
-      - awscli-setup
       - run:
           name: Install dependencies
           command: |
