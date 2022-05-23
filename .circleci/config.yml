@@ -146,6 +146,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip   
+      - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
@@ -169,26 +173,24 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text)
             echo "$BACKEND_AWS_PUBLIC_IP" >> .circleci/ansible/inventory.txt
-            cat .circleci/ansible/inventory.txt
-
-      - run: yum -y install tar gzip      
+            cat .circleci/ansible/inventory.txt   
       - persist_to_workspace:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
 
-      - destroy-environment      
-      # Here's where you will add some code to rollback on failure      
+      - destroy-environment          
 
   configure-infrastructure:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.7-alpine3.11 
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints: ["67:41:7c:64:9b:93:77:4e:f8:dc:3e:88:59:11:c4:10"]
       - attach_workspace:
           at: ~/
+      - awscli-setup    
       - run: 
           name: Install dependencies
           command: |
@@ -200,14 +202,15 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
 
-      - destroy-environment
-      # Here's where you will add some code to rollback on failure      
+      - destroy-environment  
 
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-dependances]
       - run:
           name: Run migrations
           command: |
@@ -229,9 +232,9 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
       - awscli-setup
-      - restore_cache:
-          keys: [frontend-dependencies]
       - run:
           name: Install dependencies
           command: |
