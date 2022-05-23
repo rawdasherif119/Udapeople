@@ -36,7 +36,7 @@ commands:
               npm run migration:revert
             fi
 
-  awscli_setUp:
+  AwsCli-setUp:
     description: SetUp Aws Cli
     steps:
       - run:
