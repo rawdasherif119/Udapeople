@@ -229,7 +229,7 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - awscli_setUp
+      - awscli-setup
       - restore_cache:
           keys: [frontend-dependencies]
       - run:
