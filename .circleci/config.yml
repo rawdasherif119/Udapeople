@@ -232,7 +232,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: sleavely/node-awscli:13.x
+      - image: sleavely/node-awscli:14.x
     steps:
       - checkout
       - attach_workspace:
