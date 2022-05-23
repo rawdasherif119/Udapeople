@@ -34,7 +34,19 @@ commands:
               cd ~/project/backend
               npm install
               npm run migration:revert
-            fi      
+            fi
+
+  awscli-setup:
+    description: SetUp Aws Cli
+    steps:
+      - run:
+          name: SetUp Aws Cli
+          command: |
+            apt update
+            apt install curl 
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            ./aws/install          
             
 jobs:
   build-frontend:
@@ -180,12 +192,11 @@ jobs:
           fingerprints: ["67:41:7c:64:9b:93:77:4e:f8:dc:3e:88:59:11:c4:10"]
       - attach_workspace:
           at: ~/
-      
+      - awscli-setup    
       - run: 
           name: Install dependencies
           command: |
             apk add --update ansible
-            pip install awscli
       - run:
           name: Configure infrastructure Server
           command: |
@@ -225,12 +236,12 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/
+      - awscli-setup
       - run:
           name: Install dependencies
           command: |
             cd frontend
             npm install
-            pip install awscli
       - run:
           name: Get backend url
           command: |
@@ -261,14 +272,14 @@ jobs:
         - attach_workspace:
            at: ~/
         - restore_cache:
-           keys: [backend-dependances]   
+           keys: [backend-dependances] 
+        - awscli-setup   
         - run:
            name: Install dependencies
            command: |
              cd backend
              npm install
              apk add --update ansible tar gzip
-             pip install awscli
         - run:
            name: Package Backend
            command: |
